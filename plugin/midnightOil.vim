@@ -12,5 +12,13 @@ endif
 let g:loaded_midnightOil = 1
 
 " Exposes the plugin's functions for use as commands in Vim.
-command! -nargs=0 SayHi call midnightOil#SayHi()
+"command! -nargs=0 StartMidnight call midnightOil#StartMidnight()
+"command! -nargs=0 StopMidnight call midnightOil#StopMidnight()
+"command! -nargs=0 Calculate call midnightOil#Calculate()
+"command! -nargs=0 LoadConfig call midnightOil#LoadConfig()
+"command! -nargs=0 StartTimer call midnightOil#StartTimer()
+"command! -nargs=0 IncrementSeconds call midnightOil#IncrementSeconds()
+"command! -nargs=0 MidnightOilStatusBar call midnightOil#StatusBar()
 
+au VimEnter * call midnightOil#StartMidnight()
+au VimLeave * call midnightOil#StopMidnight()
