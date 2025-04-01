@@ -1,22 +1,22 @@
 function! midnightOil#LoadConfig(...)
 				try
-					let home = expand("$HOME")
-					let lines = readfile(home . '/.midnightOil.config')
-					for line in lines
-									let v = split(line,'=')
-									let g:dict[tolower(v[0])] = v[1]
-				endfor
-					if !exists("g:dict['api-key']") || !exists("g:dict['address']")
-									let g:dict['errormsg'] = "configError"
-									call timer_stop(g:dict['timer'])
-					else
-									let g:dict['ready'] = 1
-					endif
+										let home = expand("$HOME")
+										let lines = readfile(home . '/.midnightOil.config')
+										for line in lines
+														let v = split(line,'=')
+														let g:dict[tolower(v[0])] = v[1]
+										endfor
+										if !exists("g:dict['api-key']") || !exists("g:dict['address']")
+														let g:dict['errormsg'] = "configError"
+														call timer_stop(g:dict['timer'])
+										else
+														let g:dict['ready'] = 1
+										endif
 				catch /Can't open/
 								let g:dict['errormsg'] = "readError"
 								call timer_stop(g:dict['timer'])
 				endtry
-				endfunction
+endfunction
 
 function! midnightOil#StartMidnight(...)
 				let t:startTime = midnightOil#GetDate()
