@@ -35,15 +35,15 @@ function! midnightOil#Calculate(...)
 	if g:dict['errormsg'] != ''
 		return
 	endif
-	let t:projectName = getcwd()
-	let t:arg = "curl -d \'start=" . string(t:startTime) . 
-		\"&end=" . string(t:endTime) . 
-		\"&seconds=" . string(g:secondsPassed) .
-		\"&project=" . string(t:projectName) . 
-		\"&api-key=" . g:dict['api-key']  . 
-		\"&editor=vim\' " . g:dict['address'] . 
-		\"/midnightOil"
-	call system(t:arg)
+	let file = expand("%:p")
+	let args = 'curl -Ld start=' . string(t:startTime) .
+	 	\'\&end=' . string(t:endTime) .
+	 	\'\&seconds=' . string(g:secondsPassed) .
+	 	\'\&file=' . string(file) .
+	 	\'\&api-key=' . g:dict['api-key']  .
+	 	\'\&editor=vim ' . g:dict['address'] .
+	 	\'/mno'
+	call system(args)
 endfunction
 
 function! midnightOil#GetDate(...)
