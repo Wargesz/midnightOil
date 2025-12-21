@@ -38,6 +38,9 @@ function! midnightOil#Calculate(...)
         return
     endif
     let file = expand("%:p")
+    if expand("%") == ""
+        return
+    endif
     let args = 'curl -Ld start=' . string(t:startTime) .
                 \'\&end=' . string(t:endTime) .
                 \'\&seconds=' . string(g:secondsPassed) .
