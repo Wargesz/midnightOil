@@ -10,13 +10,11 @@ function! midnightOil#LoadConfig(...)
         endfor
         if !exists("s:dict['api-key']") || !exists("s:dict['address']")
             let s:dict['errormsg'] = "configError"
-            call timer_stop(s:dict['timer'])
         else
             let s:dict['ready'] = 1
         endif
     catch /Can't open/
         let s:dict['errormsg'] = "readError"
-        call timer_stop(s:dict['timer'])
     endtry
 endfunction
 
@@ -24,20 +22,26 @@ function! midnightOil#StartMidnight(...)
     let t:startTime = midnightOil#GetDate()
     let g:secondsPassed = 0
     let s:dict = {'ready':0, 'errormsg':''}
-    let s:active = 0
-    call midnightOil#StartTimer()
     call midnightOil#LoadConfig()
+    call midnightOil#StartTimer()
+    call timer_pause(s:dict['timer'], 1)
 endfunction
 
 function! midnightOil#StopMidnight(...)
+    if s:dict['errormsg'] != ''
+        return
+    endif
+    if g:secondsPassed == 0
+        return
+    endif
+    if &modified
+        return
+    endif
     let t:endTime = midnightOil#GetDate()
     call midnightOil#Calculate()
 endfunction
 
 function! midnightOil#Calculate(...)
-    if s:dict['errormsg'] != ''
-        return
-    endif
     let file = expand("%:p")
     if expand("%") == ""
         return
@@ -57,9 +61,6 @@ function! midnightOil#GetDate(...)
 endfunction
 
 function! midnightOil#IncrementSeconds(...)
-    if s:active == 0
-        return
-    endif
     let g:secondsPassed += 1
     call lightline#update()
 endfunction
@@ -85,10 +86,9 @@ function! midnightOil#LeadingZero(value)
 endfunction
 
 function! midnightOil#ToggleStatus()
-    if mode() == 'n'
-	let s:active = 0
-	return
+    if mode() == 'n' || mode() == 'c'
+        call timer_pause(s:dict['timer'], 1)
     else
-	let s:active = 1
+	call timer_pause(s:dict['timer'], 0)
     endif
 endfunction
