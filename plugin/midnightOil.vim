@@ -13,3 +13,5 @@ let g:loaded_midnightOil = 1
 
 au VimEnter * call midnightOil#StartMidnight()
 au VimLeave * call midnightOil#StopMidnight()
+
+au ModeChanged * call midnightOil#ToggleStatus()

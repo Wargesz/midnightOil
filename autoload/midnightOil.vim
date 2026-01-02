@@ -24,6 +24,7 @@ function! midnightOil#StartMidnight(...)
     let t:startTime = midnightOil#GetDate()
     let g:secondsPassed = 0
     let s:dict = {'ready':0, 'errormsg':''}
+    let s:active = 0
     call midnightOil#StartTimer()
     call midnightOil#LoadConfig()
 endfunction
@@ -56,6 +57,9 @@ function! midnightOil#GetDate(...)
 endfunction
 
 function! midnightOil#IncrementSeconds(...)
+    if s:active == 0
+        return
+    endif
     let g:secondsPassed += 1
     call lightline#update()
 endfunction
@@ -77,5 +81,14 @@ function! midnightOil#LeadingZero(value)
         return "0"
     else
         return ""
+    endif
+endfunction
+
+function! midnightOil#ToggleStatus()
+    if mode() == 'n'
+	let s:active = 0
+	return
+    else
+	let s:active = 1
     endif
 endfunction
