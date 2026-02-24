@@ -11,7 +11,7 @@ if exists("g:loaded_midnightOil")
 endif
 let g:loaded_midnightOil = 1
 
-au VimEnter * call midnightOil#StartMidnight()
-au VimLeavePre * call midnightOil#StopMidnight()
+au BufEnter * call midnightOil#StartMidnight()
+au BufLeave * call midnightOil#StopMidnight()
 
 au ModeChanged * call midnightOil#ToggleStatus()
