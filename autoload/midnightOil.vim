@@ -1,12 +1,14 @@
 function! midnightOil#LoadConfig(...)
-    "TODO
-    "getfperm: check config file permission safety
     if !executable('curl')
         let s:dict['errormsg'] = 'curl not found'
         return
     endif
     try
         let home = expand("$HOME")
+        if getfperm(home . '/.midnightOil.config') != 'rw-------'
+            let s:dict['errormsg'] = 'open config file. 600 needed.'
+            return
+        endif
         let lines = readfile(home . '/.midnightOil.config')
         for line in lines
             let v = split(line,'=')
