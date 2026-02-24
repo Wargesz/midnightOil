@@ -1,6 +1,10 @@
 function! midnightOil#LoadConfig(...)
     "TODO
     "getfperm: check config file permission safety
+    if !executable('curl')
+        let s:dict['errormsg'] = 'curl not found'
+        return
+    endif
     try
         let home = expand("$HOME")
         let lines = readfile(home . '/.midnightOil.config')
@@ -20,7 +24,7 @@ endfunction
 
 function! midnightOil#StartMidnight(...)
     let t:startTime = midnightOil#GetDate()
-    let g:secondsPassed = 0
+    let s:secondsPassed = 0
     let s:dict = {'ready':0, 'errormsg':''}
     call midnightOil#LoadConfig()
     call midnightOil#StartTimer()
@@ -31,7 +35,7 @@ function! midnightOil#StopMidnight(...)
     if s:dict['errormsg'] != ''
         return
     endif
-    if g:secondsPassed == 0
+    if s:secondsPassed == 0
         return
     endif
     if &modified
@@ -39,6 +43,7 @@ function! midnightOil#StopMidnight(...)
     endif
     let t:endTime = midnightOil#GetDate()
     call midnightOil#Calculate()
+    let s:secondsPassed = 0
 endfunction
 
 function! midnightOil#Calculate(...)
@@ -48,7 +53,7 @@ function! midnightOil#Calculate(...)
     endif
     let args = 'curl -Ld start=' . string(t:startTime) .
                 \'\&end=' . string(t:endTime) .
-                \'\&seconds=' . string(g:secondsPassed) .
+                \'\&seconds=' . string(s:secondsPassed) .
                 \'\&file=' . string(file) .
                 \'\&api-key=' . s:dict['api-key']  .
                 \'\&editor=vim ' . s:dict['address'] .
@@ -61,7 +66,7 @@ function! midnightOil#GetDate(...)
 endfunction
 
 function! midnightOil#IncrementSeconds(...)
-    let g:secondsPassed += 1
+    let s:secondsPassed += 1
     call lightline#update()
 endfunction
 
@@ -71,7 +76,7 @@ endfunction
 
 function! midnightOil#StatusBar(...)
     if s:dict['ready']
-        return midnightOil#LeadingZero(g:secondsPassed/60) . string(g:secondsPassed/60) . ":" . midnightOil#LeadingZero(g:secondsPassed%60) . string(g:secondsPassed%60)
+        return midnightOil#LeadingZero(s:secondsPassed/60) . string(s:secondsPassed/60) . ":" . midnightOil#LeadingZero(s:secondsPassed%60) . string(s:secondsPassed%60)
     else
         return s:dict['errormsg']
     endif
