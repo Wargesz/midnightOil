@@ -12,6 +12,6 @@ endif
 let g:loaded_midnightOil = 1
 
 au BufEnter * call midnightOil#StartMidnight()
-au BufLeave * call midnightOil#StopMidnight()
+au BufUnload * call midnightOil#StopMidnight()
 
 au ModeChanged * call midnightOil#ToggleStatus()

@@ -1,51 +1,51 @@
 function! midnightOil#LoadConfig(...)
     if !executable('curl')
-        let s:dict['errormsg'] = 'curl not found'
+        let b:dict['errormsg'] = 'curl not found'
         return
     endif
     try
         let home = expand("$HOME")
         if getfperm(home . '/.midnightOil.config') != 'rw-------'
-            let s:dict['errormsg'] = 'open config file. 600 needed.'
+            let b:dict['errormsg'] = 'open config file. 600 needed.'
             return
         endif
         let lines = readfile(home . '/.midnightOil.config')
         for line in lines
             let v = split(line,'=')
-            let s:dict[tolower(v[0])] = v[1]
+            let b:dict[tolower(v[0])] = v[1]
         endfor
-        if !exists("s:dict['api-key']") || !exists("s:dict['address']")
-            let s:dict['errormsg'] = "configError"
+        if !exists("b:dict['api-key']") || !exists("b:dict['address']")
+            let b:dict['errormsg'] = "configError"
         else
-            let s:dict['ready'] = 1
+            let b:dict['ready'] = 1
         endif
     catch /Can't open/
-        let s:dict['errormsg'] = "readError"
+        let b:dict['errormsg'] = "readError"
     endtry
 endfunction
 
 function! midnightOil#StartMidnight(...)
-    let t:startTime = midnightOil#GetDate()
-    let s:secondsPassed = 0
-    let s:dict = {'ready':0, 'errormsg':''}
+    let b:startTime = midnightOil#GetDate()
+    let b:secondsPassed = 0
+    let b:dict = {'ready':0, 'errormsg':''}
     call midnightOil#LoadConfig()
     call midnightOil#StartTimer()
-    call timer_pause(s:dict['timer'], 1)
+    call timer_pause(b:dict['timer'], 1)
 endfunction
 
 function! midnightOil#StopMidnight(...)
-    if s:dict['errormsg'] != ''
+    if b:dict['errormsg'] != ''
         return
     endif
-    if s:secondsPassed == 0
+    if b:secondsPassed == 0
         return
     endif
     if &modified
         return
     endif
-    let t:endTime = midnightOil#GetDate()
+    let b:endTime = midnightOil#GetDate()
     call midnightOil#Calculate()
-    let s:secondsPassed = 0
+    let b:secondsPassed = 0
 endfunction
 
 function! midnightOil#Calculate(...)
@@ -53,12 +53,12 @@ function! midnightOil#Calculate(...)
     if expand("%") == ""
         return
     endif
-    let args = 'curl -Ld start=' . string(t:startTime) .
-                \'\&end=' . string(t:endTime) .
-                \'\&seconds=' . string(s:secondsPassed) .
+    let args = 'curl -Ld start=' . string(b:startTime) .
+                \'\&end=' . string(b:endTime) .
+                \'\&seconds=' . string(b:secondsPassed) .
                 \'\&file=' . string(file) .
-                \'\&api-key=' . s:dict['api-key']  .
-                \'\&editor=vim ' . s:dict['address'] .
+                \'\&api-key=' . b:dict['api-key']  .
+                \'\&editor=vim ' . b:dict['address'] .
                 \'/mno'
     call system(args)
 endfunction
@@ -68,19 +68,19 @@ function! midnightOil#GetDate(...)
 endfunction
 
 function! midnightOil#IncrementSeconds(...)
-    let s:secondsPassed += 1
+    let b:secondsPassed += 1
     call lightline#update()
 endfunction
 
 function! midnightOil#StartTimer(...)
-    let s:dict['timer'] = timer_start(1000,'midnightOil#IncrementSeconds', { 'repeat': -1 } )
+    let b:dict['timer'] = timer_start(1000,'midnightOil#IncrementSeconds', { 'repeat': -1 } )
 endfunction
 
 function! midnightOil#StatusBar(...)
-    if s:dict['ready']
-        return midnightOil#LeadingZero(s:secondsPassed/60) . string(s:secondsPassed/60) . ":" . midnightOil#LeadingZero(s:secondsPassed%60) . string(s:secondsPassed%60)
+    if b:dict['ready']
+        return midnightOil#LeadingZero(b:secondsPassed/60) . string(b:secondsPassed/60) . ":" . midnightOil#LeadingZero(b:secondsPassed%60) . string(b:secondsPassed%60)
     else
-        return s:dict['errormsg']
+        return b:dict['errormsg']
     endif
 endfunction
 
@@ -94,8 +94,8 @@ endfunction
 
 function! midnightOil#ToggleStatus()
     if mode() == 'n' || mode() == 'c'
-        call timer_pause(s:dict['timer'], 1)
+        call timer_pause(b:dict['timer'], 1)
     else
-	call timer_pause(s:dict['timer'], 0)
+	call timer_pause(b:dict['timer'], 0)
     endif
 endfunction
