@@ -59,7 +59,7 @@ function! midnightOil#Calculate(...)
                 \'\&file=' . string(file) .
                 \'\&api-key=' . b:dict['api-key']  .
                 \'\&editor=vim ' . b:dict['address'] .
-                \'/mno'
+                \'/butler/mno'
     call system(args)
 endfunction
 
